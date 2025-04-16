@@ -30,12 +30,17 @@ pragma solidity 0.8.19;
  * @author Siddharth Jain
  * @notice 
  * @dev Implementation of Raffle contract
- */
+ */ 
 contract Raffle {
     /* Errors */
     error Raffle__NotEnoughEth();
 
     uint256 private immutable i_entranceFee;
+    address payable[] private s_participants; // payable, because we'll send reward money to the winner of raffle
+
+    /* EVENTS */
+    event EnteredRaffle(address indexed participant);
+
 
     constructor(uint256 _entranceFee) {
         i_entranceFee = _entranceFee;
@@ -51,6 +56,9 @@ contract Raffle {
 
         // //from version 0.8.26 (less gas efficient than above's method)
         // require(msg.value >= i_entranceFee, NotEnoughEth());
+
+        s_participants.push(payable(msg.sender));
+        emit EnteredRaffle(msg.sender);
     }
 
     function SelectWinner() public {
