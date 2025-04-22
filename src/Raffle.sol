@@ -39,6 +39,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     error Raffle__NotEnoughEth();
     error Raffle__TransferToWinnerFailed();
     error Raffle__RaffleIsNotOpen();
+    error Raffle__PerformUpkeepNotNeeded(uint256 balance, uint256 playersLength, uint256 raffleState);
 
     /* Types Declarations */
     enum RaffleState {
@@ -107,7 +108,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
      * 3. The Contract has ETH and has participants, obv if has eth then will have paricipants and vice versa.
      * 4. Implicitly, the subscription has enough LINK
      */
-    function checkUpkeep(bytes calldata /* checkData */) public view returns (bool upkeepNeeded, bytes memory /* performData */) {
+    function checkUpkeep(bytes memory /* checkData */) public view returns (bool upkeepNeeded, bytes memory /* performData */) {
         bool hasEnoughTimePassed = (block.timestamp - s_lastTimeStamp) > i_interval;
         bool isOpen = s_raffleState == RaffleState.OPEN;
         bool hasEth = address(this).balance > 0;
@@ -119,21 +120,21 @@ contract Raffle is VRFConsumerBaseV2Plus {
         // OR
         // return (upkeepNeeded, hex"");
         // OR
-        // return (upkeepNeeded, hex""");
+        // return (upkeepNeeded, hex"");
         // OR
         // return (upkeepNeeded, "0x0");
     }
-
 
     //CEI (Check Effect Interaction)
     // 1. Get a random number
     // 2. Use this random number to pick the winner
     // 3. Be automatically called
-    function SelectWinner() external {
+    function performUpkeep(bytes calldata /* performData */) external {
         // a. Check
-        //  check if enough time has passed to run a new lottery
-        if ((block.timestamp - s_lastTimeStamp) < i_interval) {
-            revert();
+        // since this is an external function, anyone can call this so we need to have validations and checks
+        (bool upkeepNeeded, ) = checkUpkeep("");
+        if (!upkeepNeeded) {
+            revert Raffle__PerformUpkeepNotNeeded(address(this).balance, s_participants.length, uint256(s_raffleState));
         }
 
         // b. Effect
@@ -170,10 +171,10 @@ contract Raffle is VRFConsumerBaseV2Plus {
         // c. Interactions
         // 🎯 Submit the request to Chainlink VRF Coordinator
         // This kicks off the randomness generation process
-        uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
+        s_vrfCoordinator.requestRandomWords(request);
     }
 
-    function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override{ // Added this because it was not compiling if this was missing
+    function fulfillRandomWords(uint256 /* requestId */, uint256[] calldata randomWords) internal override{ // Added this because it was not compiling if this was missing
     
         // 2. Use this random number to pick the winner
         // logic
