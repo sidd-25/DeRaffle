@@ -27,6 +27,7 @@ pragma solidity 0.8.19;
 import {VRFConsumerBaseV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
 
+
 /**
  * @title Raffle contract
  * @author Siddharth Jain
@@ -93,7 +94,35 @@ contract Raffle is VRFConsumerBaseV2Plus {
         s_participants.push(payable(msg.sender));
         emit EnteredRaffle(msg.sender);
     }
-
+    
+    /**
+     * @notice Chainlink Automation-compatible function that tells whether it's time to pick a winner
+     * @dev This function is called by Chainlink nodes to check if upkeep is needed.
+     * It returns true if enough time has passed since the last winner was picked and there are participants.
+     * @param - null, since checkData not used in this implementation, but can be used to customize logic.
+     * @return upkeepNeeded True if performUpkeep should be called
+     * @return - null, performData Data to be passed to performUpkeep (empty in this case)
+     * 1. The time interval has passed between the raffle
+     * 2. The lottery is OPEN
+     * 3. The Contract has ETH and has participants, obv if has eth then will have paricipants and vice versa.
+     * 4. Implicitly, the subscription has enough LINK
+     */
+    function checkUpkeep(bytes calldata /* checkData */) public view returns (bool upkeepNeeded, bytes memory /* performData */) {
+        bool hasEnoughTimePassed = (block.timestamp - s_lastTimeStamp) > i_interval;
+        bool isOpen = s_raffleState == RaffleState.OPEN;
+        bool hasEth = address(this).balance > 0;
+        bool hasParticipants = s_participants.length > 0;
+        upkeepNeeded = hasEnoughTimePassed && isOpen && hasEth && hasParticipants;
+        // return statement is optional since upkeepNeeded is returns defined variable so it will automatically be returned
+        // but lets do it manually
+        return (upkeepNeeded, "");
+        // OR
+        // return (upkeepNeeded, hex"");
+        // OR
+        // return (upkeepNeeded, hex""");
+        // OR
+        // return (upkeepNeeded, "0x0");
+    }
 
 
     //CEI (Check Effect Interaction)
