@@ -41,4 +41,12 @@ contract RaffleTest is Test {
         assert(uint256(raffle.getRaffleState()) == 0);
     }
 
+    function testRaffleRevertsWhenDontSendEnoughEth() external {
+        //Arrange
+        vm.prank(PLAYER);
+        // Act, Assert
+        vm.expectRevert(Raffle.Raffle__NotEnoughEth.selector);
+        raffle.EnterRaffle();
+    }
+
 }
