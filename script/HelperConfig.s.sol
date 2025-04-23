@@ -9,14 +9,13 @@ abstract contract CodeConstants {
     uint256 public constant ETH_SEPOLIA_CHAIN_ID = 11155111;
     uint256 public constant LOCAL_CHAIN_ID = 31337;
     // VRF Mock values
-    uint96 public constant MOCK_BASE_FEE = 0.25 ether ;
-    uint96 public constant MOCK_GAS_PRICE = 1e9; 
+    uint96 public constant MOCK_BASE_FEE = 0.25 ether;
+    uint96 public constant MOCK_GAS_PRICE = 1e9;
     // LINK / ETH price
     int256 public constant MOCK_WEI_PER_UNIT_LINK = 4e15;
 }
 
 contract HelperConfig is CodeConstants, Script {
-
     /* Errors */
     error HelperConfig__InvalidChainId();
 
@@ -26,11 +25,11 @@ contract HelperConfig is CodeConstants, Script {
         bytes32 keyHash;
         uint256 subscriptionId;
         uint32 callbackGasLimit;
-        address vrfCoordinator;    
+        address vrfCoordinator;
     }
 
     NetworkConfig public activeNetworkConfig;
-    mapping (uint256 => NetworkConfig) public networkConfigs;
+    mapping(uint256 => NetworkConfig) public networkConfigs;
 
     constructor() {
         networkConfigs[ETH_SEPOLIA_CHAIN_ID] = getSepoliaNetworkConfig();
@@ -46,7 +45,7 @@ contract HelperConfig is CodeConstants, Script {
         }
     }
 
-    function getConfig() public returns(NetworkConfig memory) {
+    function getConfig() public returns (NetworkConfig memory) {
         return getConfigByChainId(block.chainid);
     }
 
@@ -65,9 +64,10 @@ contract HelperConfig is CodeConstants, Script {
         if (networkConfigs[LOCAL_CHAIN_ID].vrfCoordinator != address(0)) {
             return networkConfigs[LOCAL_CHAIN_ID];
         }
-        
+
         vm.startBroadcast();
-        VRFCoordinatorV2_5Mock vrfCoordinatorMock = new VRFCoordinatorV2_5Mock(MOCK_BASE_FEE, MOCK_GAS_PRICE, MOCK_WEI_PER_UNIT_LINK);
+        VRFCoordinatorV2_5Mock vrfCoordinatorMock =
+            new VRFCoordinatorV2_5Mock(MOCK_BASE_FEE, MOCK_GAS_PRICE, MOCK_WEI_PER_UNIT_LINK);
         vm.stopBroadcast();
 
         return NetworkConfig({
@@ -79,6 +79,4 @@ contract HelperConfig is CodeConstants, Script {
             vrfCoordinator: address(vrfCoordinatorMock)
         });
     }
-
-
 }
