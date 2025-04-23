@@ -33,6 +33,8 @@ contract RaffleTest is Test {
         subscriptionId = config.subscriptionId;
         callbackGasLimit = config.callbackGasLimit;
         vrfCoordinator = config.vrfCoordinator;
+
+        vm.deal(PLAYER, STARTING_PLAYER_BALANCE);
     }
 
     function testCheckIfRaffleStateIntializedAsOPEN() external view {
@@ -48,5 +50,14 @@ contract RaffleTest is Test {
         vm.expectRevert(Raffle.Raffle__NotEnoughEth.selector);
         raffle.EnterRaffle();
     }
+
+    function testRaffleRecordsPlayersWhenTheyEnter() external {
+        //Arrange
+        vm.prank(PLAYER);
+        // Act
+        raffle.EnterRaffle{value: entranceFee}();
+        // Assert
+        assert(raffle.getPlayer(0) == PLAYER);
+    }    
 
 }
