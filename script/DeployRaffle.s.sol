@@ -2,16 +2,30 @@
 
 pragma solidity 0.8.19;
 
-import {Script} from "forge-std/Script.sol";
+import {Script, console2} from "forge-std/Script.sol";
 import {Raffle} from "../src/Raffle.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
+import {CreateSubscription, FundSubscription, AddConsumer} from "./Interactions.s.sol";
 
 contract DeployRaffle is Script {
-    function run() public {}
+    function run() public {
+        deployRaffle();
+    }
     
     function deployRaffle() public returns (HelperConfig, Raffle) {
         HelperConfig helperConfig = new HelperConfig();
         HelperConfig.NetworkConfig memory networkConfig = helperConfig.getConfig();
+
+        // I think this is meant for live networks only not anvil
+        if (networkConfig.subscriptionId == 0) {
+            CreateSubscription createSub = new CreateSubscription();
+            (networkConfig.subscriptionId, networkConfig.vrfCoordinator) = createSub.createSubscription(networkConfig.vrfCoordinator);
+
+            // Fund Subscription
+            FundSubscription fundSub = new FundSubscription();
+            fundSub.fundSubscriptionUsingConfig();
+        }
+
 
         vm.startBroadcast();
         Raffle raffle = new Raffle(
@@ -23,6 +37,10 @@ contract DeployRaffle is Script {
             networkConfig.callbackGasLimit
             );
         vm.stopBroadcast();
+
+        AddConsumer addConsumer = new AddConsumer();
+        addConsumer.addConsumer(address(raffle), networkConfig.vrfCoordinator, networkConfig.subscriptionId);
+
         return (helperConfig, raffle);
     }
 }

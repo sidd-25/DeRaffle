@@ -4,6 +4,7 @@ pragma solidity 0.8.19;
 
 import {Script} from "forge-std/Script.sol";
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
+import {LinkToken} from "../test/mocks/LinkToken.sol";
 
 abstract contract CodeConstants {
     uint256 public constant ETH_SEPOLIA_CHAIN_ID = 11155111;
@@ -26,6 +27,8 @@ contract HelperConfig is CodeConstants, Script {
         uint256 subscriptionId;
         uint32 callbackGasLimit;
         address vrfCoordinator;
+        address link;
+
     }
 
     NetworkConfig public activeNetworkConfig;
@@ -54,9 +57,10 @@ contract HelperConfig is CodeConstants, Script {
             entranceFee: 0.01 ether, // 1e16
             interval: 30, // 30 sec
             keyHash: 0x8077df514608a09f83e4e8d300645594e5d7234665448ba83f51a50f842bd3d9,
-            subscriptionId: 0,
+            subscriptionId: 69958724107901222283308581744921330661957493396518246540101609191233221229991,
             callbackGasLimit: 500000, // 500,000 gas
-            vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B
+            vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
+            link: 0x779877A7B0D9E8603169DdbD7836e478b4624789
         });
     }
 
@@ -66,17 +70,20 @@ contract HelperConfig is CodeConstants, Script {
         }
 
         vm.startBroadcast();
-        VRFCoordinatorV2_5Mock vrfCoordinatorMock =
-            new VRFCoordinatorV2_5Mock(MOCK_BASE_FEE, MOCK_GAS_PRICE, MOCK_WEI_PER_UNIT_LINK);
+        VRFCoordinatorV2_5Mock vrfCoordinatorMock = new VRFCoordinatorV2_5Mock(MOCK_BASE_FEE, MOCK_GAS_PRICE, MOCK_WEI_PER_UNIT_LINK);
+        LinkToken linkToken = new LinkToken(); // refer notes/LinkToken_And_FundSubscription.md
+        uint256 subscriptionId = vrfCoordinatorMock.createSubscription();
         vm.stopBroadcast();
 
         return NetworkConfig({
             entranceFee: 0.01 ether, // 1e16
             interval: 30, // 30 sec
             keyHash: 0x2d6c6e7c9e9b4b1b4b1b4b1b4b1b4b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b, // doesn't matter
-            subscriptionId: 0, // doesn't matter
+            subscriptionId: subscriptionId, // doesn't matter
             callbackGasLimit: 500000, // 500,000 gas
-            vrfCoordinator: address(vrfCoordinatorMock)
-        });
+            vrfCoordinator: address(vrfCoordinatorMock),
+            link: address(linkToken)
+        });   
     }
+
 }

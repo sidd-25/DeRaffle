@@ -12,5 +12,7 @@ docs/
 
 .github/
 
+lib/
+
 # Dotenv file
 .env
