@@ -126,7 +126,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
         // but lets do it manually
         return (upkeepNeeded, "");
         // OR
-        // return (upkeepNeeded, hex"");
+        // return (upkeepNeeded, hex"0x0");
         // OR
         // return (upkeepNeeded, hex"");
         // OR
