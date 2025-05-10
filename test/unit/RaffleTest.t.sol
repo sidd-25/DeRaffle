@@ -6,6 +6,7 @@ import {Test, console} from "forge-std/Test.sol";
 import {Raffle} from "../../src/Raffle.sol";
 import {DeployRaffle} from "../../script/DeployRaffle.s.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
+import {Vm} from "forge-std/Vm.sol";
 
 contract RaffleTest is Test {
     
@@ -206,4 +207,98 @@ contract RaffleTest is Test {
         assert(upkeepNeeded);
     }
 
+    /** ============================================================================
+    *                          🛠️  Perform Upkeep  🛠️
+    *   ============================================================================ */
+
+    function testCheckPerformUpkeepOnlyIfCheckUpKeepIsTrue() public {
+        //Arrange
+        vm.prank(PLAYER);
+        raffle.EnterRaffle{value: entranceFee}();
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.number + 1);
+
+        // Act / Assert
+        raffle.performUpkeep("");
+        // if able to execute the function successfully, means checkUpkeep is true
+    }
+
+    function testPerformUpKeepRevertsIfUpKeepIsNotNeeded() public {
+        // Testing the revert - custom error with params
+        // Arrange
+        uint256 balance = 0;
+        uint256 players_array_length = 0;
+        Raffle.RaffleState rState = raffle.getRaffleState();
+
+        vm.prank(PLAYER);
+        raffle.EnterRaffle{value: entranceFee}();
+        balance = balance + entranceFee;
+        players_array_length = 1;
+
+        // Act / Assert
+        /* For custom errors with arguments
+        vm.expectRevert(
+            abi.encodeWithSelector(CustomErrorName.selector, 1, 2, 3, 4...)
+        );
+        1,2,3,4... are the arguments
+        */
+        vm.expectRevert(
+            abi.encodeWithSelector(Raffle.Raffle__PerformUpkeepNotNeeded.selector, balance, players_array_length, rState)
+        );
+        raffle.performUpkeep("");
+    }
+
+    function testPerformUpKeepUpdatesRaffleStateAndEmitsRequestId() public {
+        // Arrange
+        vm.prank(PLAYER);
+        raffle.EnterRaffle{value: entranceFee}();
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.number + 1);
+
+        // Act
+        /**
+         * 🧪 vm.recordLogs() — Captures all events emitted during this transaction.
+         * - Use vm.getRecordedLogs() to retrieve them after execution.
+         * - Logs are returned as Vm.Log structs:
+         *     struct Log {
+         *         bytes32[] topics;
+         *         bytes data;
+         *         address emitter;
+         *     }
+         *
+         * Log flow in this test:
+         * - entries[0] → Internal VRFCoordinator event (ignore)
+         * - entries[1] → Our contract's `RequestedRaffleWinner` event
+         *     topics[0] → keccak256 of event signature (can ignore)
+         *     topics[1] → requestId (indexed param we're interested in)
+         *     data      → empty (since requestId is indexed)
+         *
+         * We extract requestId from: entries[1].topics[1]
+         */
+        vm.recordLogs();
+        raffle.performUpkeep("");
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+        bytes32 requestId = entries[1].topics[1];
+
+        // Debug logs
+        console.log("Total events emitted: %s", entries.length);
+        console.log("Event Signature Hash (topics[0]):");
+        console.logBytes32(entries[1].topics[0]);
+        console.log("Request ID (topics[0]):");
+        console.logBytes32(requestId);
+
+        // Assert
+        Raffle.RaffleState raffleState = raffle.getRaffleState();
+        assert(uint256(requestId) > 0);
+        assert(raffleState == Raffle.RaffleState.CALCULATING);
+    }
+
+    modifier enterRaffle() {
+        vm.prank(PLAYER);
+        raffle.EnterRaffle{value: entranceFee}();
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.number + 1);
+        _;
+    }
+    
 }

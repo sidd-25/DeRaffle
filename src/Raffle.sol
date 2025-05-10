@@ -63,6 +63,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     /* EVENTS */
     event EnteredRaffle(address indexed participant);
     event WinnerPicked(address indexed winner);
+    event RequestedRaffleWinner(uint256 indexed requestId);
 
     constructor(
         uint256 _entranceFee,
@@ -177,7 +178,8 @@ contract Raffle is VRFConsumerBaseV2Plus {
         // c. Interactions
         // 🎯 Submit the request to Chainlink VRF Coordinator
         // This kicks off the randomness generation process
-        s_vrfCoordinator.requestRandomWords(request);
+        uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
+        emit RequestedRaffleWinner(requestId);
     }
 
     function fulfillRandomWords(uint256, /* requestId */ uint256[] calldata randomWords) internal override {
