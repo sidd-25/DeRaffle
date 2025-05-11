@@ -7,6 +7,7 @@ import {Raffle} from "../../src/Raffle.sol";
 import {DeployRaffle} from "../../script/DeployRaffle.s.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {Vm} from "forge-std/Vm.sol";
+import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 
 contract RaffleTest is Test {
     
@@ -293,7 +294,7 @@ contract RaffleTest is Test {
         assert(raffleState == Raffle.RaffleState.CALCULATING);
     }
 
-    modifier enterRaffle() {
+    modifier enteredRaffle() {
         vm.prank(PLAYER);
         raffle.EnterRaffle{value: entranceFee}();
         vm.warp(block.timestamp + interval + 1);
@@ -301,4 +302,45 @@ contract RaffleTest is Test {
         _;
     }
     
+    /** ============================================================================
+    *                          🛠️  FulfillRandomWords  🛠️
+    *   ============================================================================ */
+
+/*    function testFulFillRandomWordsCanOnlyBeCalledAfterPerformUpkeep() public enteredRaffle {
+
+        // Act / Assert
+        vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
+        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(0, address(raffle));
+
+        vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
+        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(1, address(raffle));
+
+        vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
+        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(2, address(raffle));
+
+        vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
+        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(3, address(raffle));
+
+        vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
+        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(4, address(raffle));
+
+    } Instead of this use a fuzz test like below */
+
+    /**
+     * 🧪 Fuzz Testing in Foundry
+     *
+     * - Fuzz tests run at the file level, not just per function.
+     * - Foundry automatically generates random inputs for all test functions
+     *   that accept parameters and follow the `test*` naming convention.
+     * - These tests help uncover edge cases by exploring a wide range of inputs.
+     * - All eligible functions in the file are executed with fuzzed data.
+     *
+     * Useful for validating robustness against unexpected inputs.
+     */
+    function testFulFillRandomWordsCanOnlyBeCalledAfterPerformUpkeep(uint256 RandomNums) public enteredRaffle {
+
+        // Act / Assert
+        vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
+        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(RandomNums, address(raffle));        
+    }
 }
