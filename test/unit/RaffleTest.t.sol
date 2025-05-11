@@ -38,7 +38,7 @@ contract RaffleTest is Test {
         keyHash = config.keyHash; // gas lane
         subscriptionId = config.subscriptionId;
         callbackGasLimit = config.callbackGasLimit;
-        vrfCoordinator = 0x34A1D3fff3958843C43aD80F30b94c510645C316;
+        vrfCoordinator = config.vrfCoordinator;
 
         vm.deal(PLAYER, STARTING_PLAYER_BALANCE);
     }
