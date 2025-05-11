@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import {Script} from "forge-std/Script.sol";
+import {Script,console2} from "forge-std/Script.sol";
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 import {LinkToken} from "../test/mocks/LinkToken.sol";
 
@@ -75,11 +75,13 @@ contract HelperConfig is CodeConstants, Script {
         uint256 subscriptionId = vrfCoordinatorMock.createSubscription();
         vm.stopBroadcast();
 
+        console2.log("Subscription ID in HelperConfig is:", subscriptionId); 
+
         return NetworkConfig({
             entranceFee: 0.01 ether, // 1e16
             interval: 30, // 30 sec
             keyHash: 0x2d6c6e7c9e9b4b1b4b1b4b1b4b1b4b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b, // doesn't matter
-            subscriptionId: subscriptionId, // doesn't matter
+            subscriptionId: subscriptionId, // matters now 
             callbackGasLimit: 500000, // 500,000 gas
             vrfCoordinator: address(vrfCoordinatorMock),
             link: address(linkToken)

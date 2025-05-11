@@ -12,9 +12,9 @@ contract DeployRaffle is Script {
         deployRaffle();
     }
     
-    function deployRaffle() public returns (HelperConfig, Raffle) {
+    function deployRaffle() public returns (HelperConfig, Raffle, HelperConfig.NetworkConfig memory networkConfig) {
         HelperConfig helperConfig = new HelperConfig();
-        HelperConfig.NetworkConfig memory networkConfig = helperConfig.getConfig();
+        networkConfig = helperConfig.getConfig();
 
         // I think this is meant for live networks only not anvil
         if (networkConfig.subscriptionId == 0) {
@@ -38,9 +38,11 @@ contract DeployRaffle is Script {
             );
         vm.stopBroadcast();
 
+        console2.log("VRF Coordinator address in DeployRaffle.sol is :", networkConfig.vrfCoordinator);
+        console2.log("Subscription ID in DeployRaffle is:", networkConfig.subscriptionId);
         AddConsumer addConsumer = new AddConsumer();
         addConsumer.addConsumer(address(raffle), networkConfig.vrfCoordinator, networkConfig.subscriptionId);
 
-        return (helperConfig, raffle);
+        return (helperConfig, raffle, networkConfig);
     }
 }

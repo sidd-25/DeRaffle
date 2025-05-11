@@ -54,7 +54,7 @@ contract FundSubscription is Script, CodeConstants {
     // refer notes/LinkToken_And_FundSubscription.md
     function fundSubscription(address vrfCoordinator, uint256 subscriptionId, address linkToken) public {
         console.log("Funding Subscription on chainId:", block.chainid);
-        console.log("Using VRF Coordinator:", vrfCoordinator);
+        console.log("Using VRF Coordinator in FundSubscription contracts:", vrfCoordinator);
         console.log("Funding Subscription Id:", subscriptionId);
 
         if(block.chainid == LOCAL_CHAIN_ID) {

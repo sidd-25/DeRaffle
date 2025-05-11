@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import {Test, console} from "forge-std/Test.sol";
+import {Test, console2} from "forge-std/Test.sol";
 import {Raffle} from "../../src/Raffle.sol";
 import {DeployRaffle} from "../../script/DeployRaffle.s.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
@@ -13,6 +13,7 @@ contract RaffleTest is Test {
     
     Raffle raffle;
     HelperConfig helperConfig;
+    HelperConfig.NetworkConfig config;
 
     uint256 entranceFee;
     uint256 interval;
@@ -30,15 +31,14 @@ contract RaffleTest is Test {
 
     function setUp() external {
         DeployRaffle deploy = new DeployRaffle();
-        (helperConfig, raffle) = deploy.deployRaffle();
+        (helperConfig, raffle, config) = deploy.deployRaffle();
 
-        HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
         entranceFee = config.entranceFee;
         interval = config.interval;
         keyHash = config.keyHash; // gas lane
         subscriptionId = config.subscriptionId;
         callbackGasLimit = config.callbackGasLimit;
-        vrfCoordinator = config.vrfCoordinator;
+        vrfCoordinator = 0x34A1D3fff3958843C43aD80F30b94c510645C316;
 
         vm.deal(PLAYER, STARTING_PLAYER_BALANCE);
     }
@@ -282,11 +282,11 @@ contract RaffleTest is Test {
         bytes32 requestId = entries[1].topics[1];
 
         // Debug logs
-        console.log("Total events emitted: %s", entries.length);
-        console.log("Event Signature Hash (topics[0]):");
-        console.logBytes32(entries[1].topics[0]);
-        console.log("Request ID (topics[0]):");
-        console.logBytes32(requestId);
+        console2.log("Total events emitted: %s", entries.length);
+        console2.log("Event Signature Hash (topics[0]):");
+        console2.logBytes32(entries[1].topics[0]);
+        console2.log("Request ID (topics[0]):");
+        console2.logBytes32(requestId);
 
         // Assert
         Raffle.RaffleState raffleState = raffle.getRaffleState();
@@ -343,4 +343,43 @@ contract RaffleTest is Test {
         vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
         VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(RandomNums, address(raffle));        
     }
+
+    function testFulFillRandomWordsPickWinnerResetsArrayAndSendMoney() public enteredRaffle {
+
+        // Arrange
+        uint256 additionalEntrant = 3; // total 4
+        for (uint256 i = 1; i <= additionalEntrant; i++){
+            address newPlayer = address(uint160(i)); // convert any number to address, dont start with 0
+            hoax(newPlayer, 1 ether);
+            raffle.EnterRaffle{value: entranceFee}();
+        }
+        uint256 startingTimestamp = raffle.getLastTimestamp();
+        address expectedWinner = address(1);
+        uint256 winnerStartingBalance = expectedWinner.balance;
+
+        // Act
+        vm.recordLogs();
+        raffle.performUpkeep("");
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+        bytes32 requestId = entries[1].topics[1];
+
+        console2.log("Subscription ID in RaffleTest.sol is :", subscriptionId);
+        console2.log("VRF Coordinator address in RaffleTest.sol is :", vrfCoordinator);
+
+        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(uint256(requestId), address(raffle));
+
+        // Assert
+        address recentWinner = raffle.getRecentWinner();
+        Raffle.RaffleState raffleState = raffle.getRaffleState();
+        uint256 winnerBalance = recentWinner.balance;
+        uint256 endingTimestamp = raffle.getLastTimestamp();
+        uint256 price = entranceFee * (additionalEntrant + 1);
+
+
+        assert(recentWinner == expectedWinner);
+        assert(uint256(raffleState) == 0);
+        assert(winnerBalance == winnerStartingBalance + price);
+        assert(endingTimestamp > startingTimestamp);
+    }
+
 }
