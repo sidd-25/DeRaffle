@@ -8,8 +8,12 @@ import {DeployRaffle} from "../../script/DeployRaffle.s.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {Vm} from "forge-std/Vm.sol";
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
+import {CodeConstants} from "../../script/HelperConfig.s.sol";
+// import{LinkToken} from "../../test/mocks/LinkToken.sol";
+import {FundSubscription} from "../../script/Interactions.s.sol";
 
-contract RaffleTest is Test {
+
+contract RaffleTest is Test, CodeConstants {
     
     Raffle raffle;
     HelperConfig helperConfig;
@@ -21,9 +25,12 @@ contract RaffleTest is Test {
     uint256 subscriptionId;
     uint32 callbackGasLimit;
     address vrfCoordinator;
+    address link;
     
     address public PLAYER = makeAddr("player");
     uint256 public constant STARTING_PLAYER_BALANCE = 10 ether;
+    // uint256 public constant LINK_BALANCE = 100 ether;
+
 
         /* EVENTS */
     event EnteredRaffle(address indexed participant);
@@ -39,8 +46,22 @@ contract RaffleTest is Test {
         subscriptionId = config.subscriptionId;
         callbackGasLimit = config.callbackGasLimit;
         vrfCoordinator = config.vrfCoordinator;
+        link = config.link;
 
         vm.deal(PLAYER, STARTING_PLAYER_BALANCE);
+
+/*      Method 1 - Refer Notes
+        vm.startPrank(msg.sender);
+        if (block.chainid == LOCAL_CHAIN_ID) {
+            LinkToken(link).mint(msg.sender, LINK_BALANCE);
+            VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(subscriptionId, LINK_BALANCE);
+        }
+        LinkToken(link).approve(vrfCoordinator, LINK_BALANCE);
+        vm.stopPrank();
+*/
+//      Method 2 - Refer Notes
+        FundSubscription fundSub = new FundSubscription();
+        fundSub.fundSubscription(vrfCoordinator, subscriptionId, link);
     }
 
     /** ============================================================================
