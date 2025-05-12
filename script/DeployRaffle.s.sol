@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import {Script, console2} from "forge-std/Script.sol";
+import {Script, console2} from "lib/forge-std/src/Script.sol";
 import {Raffle} from "../src/Raffle.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 import {CreateSubscription, FundSubscription, AddConsumer} from "./Interactions.s.sol";
