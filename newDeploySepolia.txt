@@ -1,0 +1,128 @@
+Compiling 3 files with Solc 0.8.19
+Solc 0.8.19 finished in 896.22ms
+Compiler run successful!
+Traces:
+  [20197401] DeployRaffle::run()
+    ├─ [8178951] → new HelperConfig@0x5aAdFB43eF8dAF45DD80F4676345b7676f1D70e3
+    │   └─ ← [Return] 39950 bytes of code
+    ├─ [3501] HelperConfig::getConfig()
+    │   └─ ← [Return] NetworkConfig({ entranceFee: 10000000000000000 [1e16], interval: 30, keyHash: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae, subscriptionId: 69958724107901222283308581744921330661957493396518246540101609191233221229991 [6.995e76], callbackGasLimit: 500000 [5e5], vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B, link: 0x779877A7B0D9E8603169DdbD7836e478b4624789, account: 0x3B38bD5073d675f29F6dA8Db60F0eeb2152e0438 })
+    ├─ [0] VM::startBroadcast(0x3B38bD5073d675f29F6dA8Db60F0eeb2152e0438)
+    │   └─ ← [Return]
+    ├─ [1581334] → new Raffle@0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929
+    │   └─ ← [Return] 7547 bytes of code
+    ├─ [0] VM::stopBroadcast()
+    │   └─ ← [Return]
+    ├─ [0] console::log("VRF Coordinator address in DeployRaffle.sol is :", VRFCoordinatorV2_5: [0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Subscription ID in DeployRaffle is:", 69958724107901222283308581744921330661957493396518246540101609191233221229991 [6.995e76]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [10233461] → new AddConsumer@0xf13D09eD3cbdD1C930d4de74808de1f33B6b3D4f
+    │   └─ ← [Return] 50982 bytes of code
+    ├─ [65252] AddConsumer::addConsumer(Raffle: [0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929], VRFCoordinatorV2_5: [0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B], 69958724107901222283308581744921330661957493396518246540101609191233221229991 [6.995e76], 0x3B38bD5073d675f29F6dA8Db60F0eeb2152e0438)
+    │   ├─ [0] console::log("Adding to consumer contract:", Raffle: [0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929]) [staticcall]
+    │   │   └─ ← [Stop]
+    │   ├─ [0] console::log("Adding to VRF Coordinator:", VRFCoordinatorV2_5: [0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B]) [staticcall]
+    │   │   └─ ← [Stop]
+    │   ├─ [0] console::9710a9d0(00000000000000000000000000000000000000000000000000000000000000409aab3c118d7ecbc74492762733304e9698f246660058dd36e19b29f8ba62fda7000000000000000000000000000000000000000000000000000000000000001a416464696e6720746f20537562736372697074696f6e2049443a000000000000) [staticcall]
+    │   │   └─ ← [Revert] unknown selector `0x9710a9d0` for ConsoleCalls
+    │   ├─ [0] console::9710a9d0(00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000aa36a7000000000000000000000000000000000000000000000000000000000000000f4f6e2074686520636861696e49643a0000000000000000000000000000000000) [staticcall]
+    │   │   └─ ← [Revert] unknown selector `0x9710a9d0` for ConsoleCalls
+    │   ├─ [0] VM::startBroadcast(0x3B38bD5073d675f29F6dA8Db60F0eeb2152e0438)
+    │   │   └─ ← [Return]
+    │   ├─ [56142] VRFCoordinatorV2_5::addConsumer(69958724107901222283308581744921330661957493396518246540101609191233221229991 [6.995e76], Raffle: [0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929])
+    │   │   ├─ emit SubscriptionConsumerAdded(subId: 69958724107901222283308581744921330661957493396518246540101609191233221229991 [6.995e76], consumer: Raffle: [0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929])
+    │   │   └─ ← [Stop]
+    │   ├─ [0] VM::stopBroadcast()
+    │   │   └─ ← [Return]
+    │   └─ ← [Stop]
+    └─ ← [Stop]
+
+
+Script ran successfully.
+
+== Logs ==
+  VRF Coordinator address in DeployRaffle.sol is : 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B
+  Subscription ID in DeployRaffle is: 69958724107901222283308581744921330661957493396518246540101609191233221229991
+  Adding to consumer contract: 0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929
+  Adding to VRF Coordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B
+
+## Setting up 1 EVM.
+==========================
+Simulated On-chain Traces:
+
+  [1581334] → new Raffle@0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929
+    └─ ← [Return] 7547 bytes of code
+
+  [56142] VRFCoordinatorV2_5::addConsumer(69958724107901222283308581744921330661957493396518246540101609191233221229991 [6.995e76], Raffle: [0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929])
+    ├─ emit SubscriptionConsumerAdded(subId: 69958724107901222283308581744921330661957493396518246540101609191233221229991 [6.995e76], consumer: Raffle: [0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929])
+    └─ ← [Stop]
+
+
+==========================
+
+Chain 11155111
+
+Estimated gas price: 0.00100005 gwei
+
+Estimated total gas used for script: 2417056
+
+Estimated amount required: 0.0000024171768528 ETH
+
+==========================
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (1) contracts
+Start verifying contract `0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929` deployed on sepolia
+EVM version: cancun
+Compiler version: 0.8.19
+Constructor args: 000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000000000000000001e0000000000000000000000009ddfaca8183c41ad55329bdeed9f6a8d53168b1b9aab3c118d7ecbc74492762733304e9698f246660058dd36e19b29f8ba62fda7787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae000000000000000000000000000000000000000000000000000000000007a120
+
+Submitting verification for [src/Raffle.sol:Raffle] 0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929.
+
+Submitting verification for [src/Raffle.sol:Raffle] 0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929.
+
+Submitting verification for [src/Raffle.sol:Raffle] 0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929.
+
+Submitting verification for [src/Raffle.sol:Raffle] 0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `yf1gw9ekikdilsjlwzev2rgjj3gcaunzawvvmr3pu8gucxrrkm`
+	URL: https://sepolia.etherscan.io/address/0x107efdbbebaf042d565adbbe8a65b3dcb9eb3929
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (1) contracts were verified!
+
+Transactions saved to: /Users/sid/Desktop/DeRaffle/broadcast/DeployRaffle.s.sol/11155111/run-latest.json
+
+Sensitive values saved to: /Users/sid/Desktop/DeRaffle/cache/DeployRaffle.s.sol/11155111/run-latest.json
+
+Enter keystore password:
+
+##### sepolia
+✅  [Success] Hash: 0xc3303762c4a930f3e7f72f2c1eebaf4644cb193dd21b6e872fbc06de1f4667ab
+Contract Address: 0x107eFdbBEbAF042d565aDBBe8a65b3dcB9eB3929
+Block: 8312987
+Paid: 0.00000177148628605 ETH (1771442 gas * 0.001000025 gwei)
+
+
+##### sepolia
+✅  [Success] Hash: 0xf485a0deb0c626670db6410d82a3cbc302435aee357204aa5eb21d459982b74f
+Block: 8312987
+Paid: 0.00000007807595185 ETH (78074 gas * 0.001000025 gwei)
+
+✅ Sequence #1 on sepolia | Total Paid: 0.0000018495622379 ETH (1849516 gas * avg 0.001000025 gwei)
+                                                                                                                                                      Warning: Could not detect the deployment.; waiting 5 seconds before trying again (4 tries remaining)
+Warning: Could not detect the deployment.; waiting 5 seconds before trying again (3 tries remaining)
+Warning: Could not detect the deployment.; waiting 5 seconds before trying again (2 tries remaining)
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+sid@Sids-MacBook-Pro DeRaffle % 

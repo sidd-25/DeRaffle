@@ -17,3 +17,6 @@ install :; \
 	forge install smartcontractkit/chainlink-brownie-contracts && \
 	forge install foundry-rs/forge-std@v1.8.2 && \
 	forge install transmissions11/solmate
+
+deploy-sepolia:
+	@forge script script/DeployRaffle.s.sol:DeployRaffle --rpc-url $(SEPOLIA_URL) --account realKey --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvv
