@@ -26,6 +26,7 @@ contract RaffleTest is Test, CodeConstants {
     uint32 callbackGasLimit;
     address vrfCoordinator;
     address link;
+    address account;
     
     address public PLAYER = makeAddr("player");
     uint256 public constant STARTING_PLAYER_BALANCE = 10 ether;
@@ -47,6 +48,7 @@ contract RaffleTest is Test, CodeConstants {
         callbackGasLimit = config.callbackGasLimit;
         vrfCoordinator = config.vrfCoordinator;
         link = config.link;
+        account = config.account;
 
         vm.deal(PLAYER, STARTING_PLAYER_BALANCE);
 
@@ -61,7 +63,7 @@ contract RaffleTest is Test, CodeConstants {
 */
 //      Method 2 - Refer Notes
         FundSubscription fundSub = new FundSubscription();
-        fundSub.fundSubscription(vrfCoordinator, subscriptionId, link);
+        fundSub.fundSubscription(vrfCoordinator, subscriptionId, link, account);
     }
 
     /** ============================================================================
@@ -326,8 +328,16 @@ contract RaffleTest is Test, CodeConstants {
     /** ============================================================================
     *                          🛠️  FulfillRandomWords  🛠️
     *   ============================================================================ */
+    // Refer notes/skipFork_explanation.md
+    modifier skipFork{
+        if (block.chainid != LOCAL_CHAIN_ID) {
+            return;
+        } else {
+            _;
+        }
+    }
 
-/*    function testFulFillRandomWordsCanOnlyBeCalledAfterPerformUpkeep() public enteredRaffle {
+/*    function testFulFillRandomWordsCanOnlyBeCalledAfterPerformUpkeep() public enteredRaffle skipFork{
 
         // Act / Assert
         vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
@@ -358,14 +368,14 @@ contract RaffleTest is Test, CodeConstants {
      *
      * Useful for validating robustness against unexpected inputs.
      */
-    function testFulFillRandomWordsCanOnlyBeCalledAfterPerformUpkeep(uint256 RandomNums) public enteredRaffle {
+    function testFulFillRandomWordsCanOnlyBeCalledAfterPerformUpkeep(uint256 RandomNums) public enteredRaffle skipFork{
 
         // Act / Assert
         vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
         VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(RandomNums, address(raffle));        
     }
 
-    function testFulFillRandomWordsPickWinnerResetsArrayAndSendMoney() public enteredRaffle {
+    function testFulFillRandomWordsPickWinnerResetsArrayAndSendMoney() public enteredRaffle skipFork{
 
         // Arrange
         uint256 additionalEntrant = 3; // total 4

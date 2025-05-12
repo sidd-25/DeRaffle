@@ -19,15 +19,15 @@ contract DeployRaffle is Script {
         // I think this is meant for live networks only not anvil
         if (networkConfig.subscriptionId == 0) {
             CreateSubscription createSub = new CreateSubscription();
-            (networkConfig.subscriptionId, networkConfig.vrfCoordinator) = createSub.createSubscription(networkConfig.vrfCoordinator);
+            (networkConfig.subscriptionId, networkConfig.vrfCoordinator) = createSub.createSubscription(networkConfig.vrfCoordinator, networkConfig.account);
 
             // Fund Subscription
             FundSubscription fundSub = new FundSubscription();
             fundSub.fundSubscriptionUsingConfig();
         }
+ 
 
-
-        vm.startBroadcast();
+        vm.startBroadcast(networkConfig.account);
         Raffle raffle = new Raffle(
             networkConfig.entranceFee, 
             networkConfig.interval, 
@@ -41,7 +41,7 @@ contract DeployRaffle is Script {
         console2.log("VRF Coordinator address in DeployRaffle.sol is :", networkConfig.vrfCoordinator);
         console2.log("Subscription ID in DeployRaffle is:", networkConfig.subscriptionId);
         AddConsumer addConsumer = new AddConsumer();
-        addConsumer.addConsumer(address(raffle), networkConfig.vrfCoordinator, networkConfig.subscriptionId);
+        addConsumer.addConsumer(address(raffle), networkConfig.vrfCoordinator, networkConfig.subscriptionId, networkConfig.account);
 
         return (helperConfig, raffle, networkConfig);
     }

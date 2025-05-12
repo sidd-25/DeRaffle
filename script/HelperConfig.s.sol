@@ -28,7 +28,7 @@ contract HelperConfig is CodeConstants, Script {
         uint32 callbackGasLimit;
         address vrfCoordinator;
         address link;
-
+        address account;
     }
 
     NetworkConfig public activeNetworkConfig;
@@ -60,7 +60,8 @@ contract HelperConfig is CodeConstants, Script {
             subscriptionId: 69958724107901222283308581744921330661957493396518246540101609191233221229991,
             callbackGasLimit: 500000, // 500,000 gas
             vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B,
-            link: 0x779877A7B0D9E8603169DdbD7836e478b4624789
+            link: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
+            account: 0x3B38bD5073d675f29F6dA8Db60F0eeb2152e0438 // metamask account address
         });
     }
 
@@ -84,7 +85,8 @@ contract HelperConfig is CodeConstants, Script {
             subscriptionId: subscriptionId, // matters now 
             callbackGasLimit: 500000, // 500,000 gas
             vrfCoordinator: address(vrfCoordinatorMock),
-            link: address(linkToken)
+            link: address(linkToken),
+            account: 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38 // Default sender's address in foundry, see Base.sol lib/forge-std/src/Base.sol
         });   
     }
 
