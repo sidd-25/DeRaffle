@@ -63,6 +63,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     /* EVENTS */
     event EnteredRaffle(address indexed participant);
     event WinnerPicked(address indexed winner);
+    event RequestedRaffleWinner(uint256 indexed requestId);
 
     constructor(
         uint256 _entranceFee,
@@ -126,7 +127,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
         // but lets do it manually
         return (upkeepNeeded, "");
         // OR
-        // return (upkeepNeeded, hex"");
+        // return (upkeepNeeded, hex"0x0");
         // OR
         // return (upkeepNeeded, hex"");
         // OR
@@ -177,7 +178,8 @@ contract Raffle is VRFConsumerBaseV2Plus {
         // c. Interactions
         // 🎯 Submit the request to Chainlink VRF Coordinator
         // This kicks off the randomness generation process
-        s_vrfCoordinator.requestRandomWords(request);
+        uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
+        emit RequestedRaffleWinner(requestId);
     }
 
     function fulfillRandomWords(uint256, /* requestId */ uint256[] calldata randomWords) internal override {
@@ -212,11 +214,23 @@ contract Raffle is VRFConsumerBaseV2Plus {
 
     // Getter Functions
 
-    function getEntranceFee() public view returns (uint256) {
+    function getEntranceFee() external view returns (uint256) {
         return i_entranceFee;
     }
 
-    function getRaffleState() public view returns(RaffleState) {
+    function getRaffleState() external view returns(RaffleState) {
         return s_raffleState;
+    }
+
+    function getPlayer(uint256 index) external view returns (address) {
+        return s_participants[index];
+    }
+
+    function getLastTimestamp() external view returns(uint256){
+        return s_lastTimeStamp;
+    }
+
+    function getRecentWinner() external view returns(address){
+        return s_recentWinner;
     }
 }
