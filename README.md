@@ -43,7 +43,7 @@ notes/              # Technical notes and explanations
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/DeRaffle.git
+git clone https://github.com/sidd-25/DeRaffle.git
 cd DeRaffle
 
 # Install Foundry dependencies
